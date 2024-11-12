@@ -11,7 +11,8 @@ social-auto-upload This project aims to automate the posting of videos to variou
   - [x] 视频号
   - [x] bilibili
   - [x] 小红书
-  - [ ] 快手
+  - [x] 快手
+  - [ ] 百家号
 
 - 部分国外社交媒体：
   - [x] tiktok
@@ -87,7 +88,7 @@ usage: cli_main.py [-h] platform account_name action ...
 Upload video to multiple social-media.
 
 positional arguments:
-  platform      Choose social-media platform: douyin tencent tiktok
+  platform      Choose social-media platform: douyin tencent tiktok kuaishou
   account_name  Account name for the platform: xiaoA
   action        Choose action
     upload      upload operation
@@ -182,7 +183,7 @@ generate_schedule_time_next_day 默认从第二天开始（此举为避免选择
 ![Alt text](media/20231009111131.png)
 - 导出
 ![Alt text](media/20231009111214.png)
-3. 黏贴至 accounts.ini文件中
+3. 黏贴至 uploader/xhs_uploader/accounts.ini文件中
 
 
 #### 解释与注意事项：
