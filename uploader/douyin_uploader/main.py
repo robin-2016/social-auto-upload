@@ -115,17 +115,26 @@ class DouYinVideo(object):
         # 点击 "上传视频" 按钮
         await page.locator("div[class^='container'] input").set_input_files(self.file_path)
 
-        # 等待页面跳转到指定的 URL
+        # 等待页面跳转到指定的 URL 2025.01.08修改在原有基础上兼容两种页面
         while True:
-            # 判断是是否进入视频发布页面，没进入，则自动等待到超时
             try:
+                # 尝试等待第一个 URL
                 await page.wait_for_url(
-                    "https://creator.douyin.com/creator-micro/content/publish?enter_from=publish_page")
-                break
-            except:
-                douyin_logger.info(f'  [-] 正在等待进入视频发布页面...')
-                await asyncio.sleep(0.1)
+                    "https://creator.douyin.com/creator-micro/content/publish?enter_from=publish_page", timeout=3)
+                douyin_logger.info("[+] 成功进入version_1发布页面!")
+                break  # 成功进入页面后跳出循环
+            except Exception:
+                try:
+                    # 如果第一个 URL 超时，再尝试等待第二个 URL
+                    await page.wait_for_url(
+                        "https://creator.douyin.com/creator-micro/content/post/video?enter_from=publish_page",
+                        timeout=3)
+                    douyin_logger.info("[+] 成功进入version_2发布页面!")
 
+                    break  # 成功进入页面后跳出循环
+                except:
+                    print("  [-] 超时未进入视频发布页面，重新尝试...")
+                    await asyncio.sleep(0.5)  # 等待 0.5 秒后重新尝试
         # 填充标题和话题
         # 检查是否存在包含输入框的元素
         # 这里为了避免页面变化，故使用相对位置定位：作品标题父级右侧第一个元素的input子元素
@@ -216,10 +225,11 @@ class DouYinVideo(object):
             # 定位到上传区域并点击
             await page.locator("div[class^='semi-upload upload'] >> input.semi-upload-hidden-input").set_input_files(thumbnail_path)
             await page.wait_for_timeout(2000)  # 等待2秒
-            finish_confirm_element = page.locator("div[class^='confirmBtn'] >> div:has-text('完成')")
-            if await finish_confirm_element.count():
-                await finish_confirm_element.click()
-            await page.locator("div[class^='footer'] button:has-text('完成')").click()
+            await page.locator("div[class^='extractFooter'] button:visible:has-text('完成')").click()
+            # finish_confirm_element = page.locator("div[class^='confirmBtn'] >> div:has-text('完成')")
+            # if await finish_confirm_element.count():
+            #     await finish_confirm_element.click()
+            # await page.locator("div[class^='footer'] button:has-text('完成')").click()
 
     async def set_location(self, page: Page, location: str = "杭州市"):
         # todo supoort location later
